@@ -43,4 +43,11 @@ public class PostService {
 
 
     }
+                public List<PostModel> showAll(){
+                    return postRepo.findAll();
+                }
+
+
+
+
 }

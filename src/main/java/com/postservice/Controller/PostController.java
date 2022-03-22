@@ -33,6 +33,10 @@ public class PostController {
 
     @Autowired
     private PostService postService;
+    @GetMapping("/posts")
+    public ResponseEntity<List<PostModel>> showAll(){
+        return new ResponseEntity<List<PostModel>>(postService.showAll(), HttpStatus.ACCEPTED);
+    }
 
 
     @DeleteMapping("/posts/{postId}")
