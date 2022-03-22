@@ -16,9 +16,14 @@ public class PostService {
     @Autowired
     private PostRepo postRepo;
 
+
+    public PostModel findById(String postId){
+        return this.postRepo.findById(postId).get();
+
     public PostModel savePost(PostModel postModel){
         postModel.setCreatedAt(LocalDateTime.now());
         postModel.setUpdatedAt(null);
         return postRepo.save(postModel);
+
     }
 }
