@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotEmpty;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Document(collection = "PostService")
@@ -33,8 +34,8 @@ public class PostModel {
     private String postedBy;
 
 
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
 }
