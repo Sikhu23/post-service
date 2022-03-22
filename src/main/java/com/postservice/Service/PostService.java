@@ -8,6 +8,8 @@ import com.postservice.Model.FeignRequest;
 import com.postservice.Model.PostModel;
 import com.postservice.Repository.PostRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -65,8 +67,9 @@ public class PostService {
 
     }
 
-    public List<PostModel> showAll(){
-                    return postRepo.findAll();
+    public List<PostModel> showAll(int page,int pageSize ){
+        Pageable firstPage = PageRequest.of(page, pageSize);
+                    return postRepo.findAll(firstPage).toList();
                 }
 
 

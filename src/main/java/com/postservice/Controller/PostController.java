@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.ws.rs.QueryParam;
 
 
 @RestController
@@ -46,8 +47,8 @@ public class PostController {
    
 
     @GetMapping("/posts")
-    public ResponseEntity<List<PostModel>> showAll(){
-        return new ResponseEntity<List<PostModel>>(postService.showAll(), HttpStatus.ACCEPTED);
+    public ResponseEntity<List<PostModel>> showAll(@QueryParam("page") int page, @QueryParam("pageSize") int pageSize){
+        return new ResponseEntity<List<PostModel>>(postService.showAll(page,pageSize), HttpStatus.ACCEPTED);
     }
 
 
