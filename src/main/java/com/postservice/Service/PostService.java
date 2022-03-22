@@ -21,6 +21,11 @@ public class PostService {
     private PostRepo postRepo;
 
 
+    public String deleteById(String postId){
+        this.postRepo.deleteById(postId);
+        return "Post id "+postId+ " Deleted Successfully";
+
+
     public PostModel updatePost(PostModel postModel, String postId){
 
         postModel.setCreatedAt(postRepo.findById(postId).get().getCreatedAt());
