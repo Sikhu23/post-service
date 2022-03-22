@@ -14,6 +14,7 @@ import lombok.ToString;
 public class FeignRequest {
 
     private PostModel postModel;
+    private User user;
     private int commentCounts;
     private int likeCounts;
 }

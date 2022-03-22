@@ -3,6 +3,7 @@ package com.postservice.Service;
 
 import com.postservice.Feign.FeignComment;
 import com.postservice.Feign.FeignLike;
+import com.postservice.Feign.FeignUser;
 import com.postservice.Model.FeignRequest;
 import com.postservice.Model.PostModel;
 import com.postservice.Repository.PostRepo;
@@ -25,6 +26,8 @@ public class PostService {
     private FeignComment feignComment;
     @Autowired
     private FeignLike feignLike;
+    @Autowired
+    private FeignUser feignUser;
 
 
 
@@ -47,6 +50,7 @@ public class PostService {
         FeignRequest feignRequest= new FeignRequest();
         feignRequest.setCommentCounts(feignComment.commentCount(postId));
         feignRequest.setLikeCounts(feignLike.likeCount(postId));
+        feignRequest.setUser(feignUser.findByID(postRepo.findById(postId).get().getPostedBy()));
 
 
              feignRequest.setPostModel(this.postRepo.findById(postId).get());
@@ -55,7 +59,7 @@ public class PostService {
 
     public PostModel savePost(PostModel postModel){
         postModel.setCreatedAt(LocalDateTime.now());
-        postModel.setUpdatedAt(null);
+        postModel.setUpdatedAt(postModel.getCreatedAt());
         return postRepo.save(postModel);
 
 

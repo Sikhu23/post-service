@@ -23,8 +23,6 @@ public class PostModel {
     private String postID;
 
 
-    @NotEmpty(message = "user ID is required")
-    private String userID;
 
 
     @NotEmpty(message = "post is required")
