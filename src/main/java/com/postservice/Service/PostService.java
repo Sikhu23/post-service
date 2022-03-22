@@ -1,6 +1,9 @@
 package com.postservice.Service;
 
 
+import com.postservice.Feign.FeignComment;
+import com.postservice.Feign.FeignLike;
+import com.postservice.Model.FeignRequest;
 import com.postservice.Model.PostModel;
 import com.postservice.Repository.PostRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,17 +15,16 @@ import java.util.List;
 import java.time.LocalDateTime;
 
 
-
-import java.time.LocalDateTime;
-
-
-
-
 @Service
 public class PostService {
 
     @Autowired
     private PostRepo postRepo;
+
+    @Autowired
+    private FeignComment feignComment;
+    @Autowired
+    private FeignLike feignLike;
 
 
 
@@ -40,8 +42,15 @@ public class PostService {
     }
 
 
-    public PostModel findById(String postId){
-            return this.postRepo.findById(postId).get();
+    public FeignRequest findById(String postId){
+
+        FeignRequest feignRequest= new FeignRequest();
+        feignRequest.setCommentCounts(feignComment.commentCount(postId));
+        feignRequest.setLikeCounts(feignLike.likeCount(postId));
+
+
+             feignRequest.setPostModel(this.postRepo.findById(postId).get());
+             return  feignRequest;
         }
 
     public PostModel savePost(PostModel postModel){

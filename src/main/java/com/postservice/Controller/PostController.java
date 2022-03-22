@@ -1,6 +1,7 @@
 package com.postservice.Controller;
 
 
+import com.postservice.Model.FeignRequest;
 import com.postservice.Model.PostModel;
 import com.postservice.Service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class PostController {
     }
 
     @GetMapping("/posts/{postId}")
-    public ResponseEntity<PostModel> findById(@PathVariable("postId") String postId){
+    public ResponseEntity<FeignRequest> findById(@PathVariable("postId") String postId){
         return new ResponseEntity<>(postService.findById(postId), HttpStatus.ACCEPTED);
     }
 
