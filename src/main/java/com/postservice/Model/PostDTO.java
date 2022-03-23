@@ -24,8 +24,8 @@ public class PostDTO {
     @NotEmpty(message = "post is required")
     private String post;
 
-    @NotEmpty(message = "postedBy ID is required")
-    private String postedBy;
+    @NotEmpty(message = "postedBy ID Object is required")
+    private User postedBy;
 
 
     private LocalDateTime createdAt;

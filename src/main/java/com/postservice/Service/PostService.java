@@ -55,7 +55,7 @@ public class PostService {
         this.postRepo.save(postModel);
 
         PostDTO postDTO= new PostDTO(postModel.getPostID(),postModel.getPost(),
-                feignUser.findByID(postModel.getPostedBy()).getFirstName()
+                feignUser.findByID(postModel.getPostedBy())
                 ,postModel.getCreatedAt(),postModel.getUpdatedAt(),feignLike.likeCount(postModel.getPostID()),
                 feignComment.commentCount(postModel.getPostID()));
 
@@ -70,7 +70,7 @@ public class PostService {
             PostModel postModel=postRepo.findById(postId).get();
 
             PostDTO postDTO= new PostDTO(postModel.getPostID(),postModel.getPost(),
-                    feignUser.findByID(postModel.getPostedBy()).getFirstName()
+                    feignUser.findByID(postModel.getPostedBy())
                     ,postModel.getCreatedAt(),postModel.getUpdatedAt(),feignLike.likeCount(postModel.getPostID()),
                     feignComment.commentCount(postModel.getPostID()));
 
@@ -90,7 +90,7 @@ public class PostService {
         postRepo.save(postModel);
 
         PostDTO postDTO= new PostDTO(postModel.getPostID(),postModel.getPost(),
-                feignUser.findByID(postModel.getPostedBy()).getFirstName()
+                feignUser.findByID(postModel.getPostedBy())
                 ,postModel.getCreatedAt(),postModel.getUpdatedAt(),0,0);
 
         return postDTO;
@@ -114,7 +114,7 @@ public class PostService {
         List<PostDTO> postDTOS=new ArrayList<>();
         for(PostModel postModel:postModels){
             PostDTO postDTO = new PostDTO(postModel.getPostID(),postModel.getPost(),
-                    feignUser.findByID(postModel.getPostedBy()).getFirstName(),postModel.getCreatedAt(),
+                    feignUser.findByID(postModel.getPostedBy()),postModel.getCreatedAt(),
                     postModel.getUpdatedAt(),feignLike.likeCount(postModel.getPostID()),
                     feignComment.commentCount(postModel.getPostID()));
             postDTOS.add(postDTO);
