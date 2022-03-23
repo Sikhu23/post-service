@@ -1,6 +1,7 @@
 package com.postservice.Service;
 
 
+import com.postservice.Exception.PostNotFoundException;
 import com.postservice.Feign.FeignComment;
 import com.postservice.Feign.FeignLike;
 import com.postservice.Feign.FeignUser;
@@ -36,8 +37,14 @@ public class PostService {
 
 
     public String deleteById(String postId) {
-        this.postRepo.deleteById(postId);
-        return "Post id " + postId + " Deleted Successfully";
+        if(this.postRepo.findById(postId).isPresent()){
+
+            this.postRepo.deleteById(postId);
+            return "Post id " + postId + " Deleted Successfully";
+        }
+        else{
+            throw new PostNotFoundException("Post ID Doesnot Exists");
+        }
     }
 
 
@@ -58,15 +65,20 @@ public class PostService {
 
     public PostDTO findById(String postId){
 
+        try{
 
-       PostModel postModel=postRepo.findById(postId).get();
-        PostDTO postDTO= new PostDTO(postModel.getPostID(),postModel.getPost(),
-                feignUser.findByID(postModel.getPostedBy()).getFirstName()
-                ,postModel.getCreatedAt(),postModel.getUpdatedAt(),feignLike.likeCount(postModel.getPostID()),
-                feignComment.commentCount(postModel.getPostID()));
+            PostModel postModel=postRepo.findById(postId).get();
 
-        return postDTO;
+            PostDTO postDTO= new PostDTO(postModel.getPostID(),postModel.getPost(),
+                    feignUser.findByID(postModel.getPostedBy()).getFirstName()
+                    ,postModel.getCreatedAt(),postModel.getUpdatedAt(),feignLike.likeCount(postModel.getPostID()),
+                    feignComment.commentCount(postModel.getPostID()));
 
+            return postDTO;
+        }
+        catch (Exception e){
+                    throw new PostNotFoundException("Post ID Doesnot Exists");
+        }
 
 
     }
@@ -96,6 +108,9 @@ public class PostService {
         }
         Pageable firstPage = PageRequest.of(page-1, pageSize);
         List<PostModel> postModels= postRepo.findAll(firstPage).toList();
+        if(postModels.isEmpty()){
+            throw new PostNotFoundException("Post Doesnot Exist");
+        }
         List<PostDTO> postDTOS=new ArrayList<>();
         for(PostModel postModel:postModels){
             PostDTO postDTO = new PostDTO(postModel.getPostID(),postModel.getPost(),
