@@ -1,6 +1,7 @@
 package com.postservice.Service;
 
 
+import com.postservice.Const.ConstFile;
 import com.postservice.Exception.PostNotFoundException;
 import com.postservice.Feign.FeignComment;
 import com.postservice.Feign.FeignLike;
@@ -40,10 +41,10 @@ public class PostService {
         if(this.postRepo.findById(postId).isPresent()){
 
             this.postRepo.deleteById(postId);
-            return "Post id " + postId + " Deleted Successfully";
+            return ConstFile.SuccessCode;
         }
         else{
-            throw new PostNotFoundException("Post ID Doesnot Exists");
+            throw new PostNotFoundException(ConstFile.errorCode);
         }
     }
 
@@ -77,7 +78,7 @@ public class PostService {
             return postDTO;
         }
         catch (Exception e){
-                    throw new PostNotFoundException("Post ID Doesnot Exists");
+                    throw new PostNotFoundException(ConstFile.errorCode);
         }
 
 
@@ -109,7 +110,7 @@ public class PostService {
         Pageable firstPage = PageRequest.of(page-1, pageSize);
         List<PostModel> postModels= postRepo.findAll(firstPage).toList();
         if(postModels.isEmpty()){
-            throw new PostNotFoundException("Post Doesnot Exist");
+            throw new PostNotFoundException(ConstFile.errorCode);
         }
         List<PostDTO> postDTOS=new ArrayList<>();
         for(PostModel postModel:postModels){
