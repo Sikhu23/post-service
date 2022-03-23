@@ -5,6 +5,7 @@ import com.postservice.Feign.FeignComment;
 import com.postservice.Feign.FeignLike;
 import com.postservice.Feign.FeignUser;
 import com.postservice.Model.FeignRequest;
+import com.postservice.Model.PostDTO;
 import com.postservice.Model.PostModel;
 import com.postservice.Repository.PostRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import java.time.LocalDateTime;
@@ -39,37 +41,72 @@ public class PostService {
     }
 
 
-    public PostModel updatePost(PostModel postModel, String postId) {
-
+    public PostDTO updatePost(PostModel postModel, String postId) {
+        postModel.setPostID(postId);
         postModel.setCreatedAt(postRepo.findById(postId).get().getCreatedAt());
         postModel.setUpdatedAt(LocalDateTime.now());
-        return this.postRepo.save(postModel);
+        this.postRepo.save(postModel);
+
+        PostDTO postDTO= new PostDTO(postModel.getPostID(),postModel.getPost(),
+                feignUser.findByID(postModel.getPostedBy()).getFirstName()
+                ,postModel.getCreatedAt(),postModel.getUpdatedAt(),feignLike.likeCount(postModel.getPostID()),
+                feignComment.commentCount(postModel.getPostID()));
+
+        return postDTO;
     }
 
 
-    public FeignRequest findById(String postId){
-
-        FeignRequest feignRequest= new FeignRequest();
-        feignRequest.setCommentCounts(feignComment.commentCount(postId));
-        feignRequest.setLikeCounts(feignLike.likeCount(postId));
-        feignRequest.setUser(feignUser.findByID(postRepo.findById(postId).get().getPostedBy()));
+    public PostDTO findById(String postId){
 
 
-             feignRequest.setPostModel(this.postRepo.findById(postId).get());
-             return  feignRequest;
-        }
+       PostModel postModel=postRepo.findById(postId).get();
+        PostDTO postDTO= new PostDTO(postModel.getPostID(),postModel.getPost(),
+                feignUser.findByID(postModel.getPostedBy()).getFirstName()
+                ,postModel.getCreatedAt(),postModel.getUpdatedAt(),feignLike.likeCount(postModel.getPostID()),
+                feignComment.commentCount(postModel.getPostID()));
 
-    public PostModel savePost(PostModel postModel){
+        return postDTO;
+
+
+
+    }
+
+    public PostDTO savePost(PostModel postModel){
+
         postModel.setCreatedAt(LocalDateTime.now());
         postModel.setUpdatedAt(postModel.getCreatedAt());
-        return postRepo.save(postModel);
+        postRepo.save(postModel);
+
+        PostDTO postDTO= new PostDTO(postModel.getPostID(),postModel.getPost(),
+                feignUser.findByID(postModel.getPostedBy()).getFirstName()
+                ,postModel.getCreatedAt(),postModel.getUpdatedAt(),0,0);
+
+        return postDTO;
+
 
 
     }
 
-    public List<PostModel> showAll(int page,int pageSize ){
-        Pageable firstPage = PageRequest.of(page, pageSize);
-                    return postRepo.findAll(firstPage).toList();
+    public List<PostDTO> showAll(Integer page,Integer pageSize ){
+        if(page==null){
+            page=1;
+        }
+        if(pageSize==null){
+            pageSize=10;
+        }
+        Pageable firstPage = PageRequest.of(page-1, pageSize);
+        List<PostModel> postModels= postRepo.findAll(firstPage).toList();
+        List<PostDTO> postDTOS=new ArrayList<>();
+        for(PostModel postModel:postModels){
+            PostDTO postDTO = new PostDTO(postModel.getPostID(),postModel.getPost(),
+                    feignUser.findByID(postModel.getPostedBy()).getFirstName(),postModel.getCreatedAt(),
+                    postModel.getUpdatedAt(),feignLike.likeCount(postModel.getPostID()),
+                    feignComment.commentCount(postModel.getPostID()));
+            postDTOS.add(postDTO);
+        }
+        return  postDTOS;
+
+
                 }
 
 

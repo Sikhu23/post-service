@@ -2,31 +2,24 @@ package com.postservice.Controller;
 
 
 import com.postservice.Model.FeignRequest;
+import com.postservice.Model.PostDTO;
 import com.postservice.Model.PostModel;
 import com.postservice.Service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
-
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -38,6 +31,7 @@ import javax.ws.rs.QueryParam;
 
 
 @RestController
+@RequestMapping("/posts")
 public class PostController {
 
     @Autowired
@@ -46,32 +40,32 @@ public class PostController {
 
    
 
-    @GetMapping("/posts")
-    public ResponseEntity<List<PostModel>> showAll(@QueryParam("page") int page, @QueryParam("pageSize") int pageSize){
-        return new ResponseEntity<List<PostModel>>(postService.showAll(page,pageSize), HttpStatus.ACCEPTED);
+    @GetMapping()
+    public ResponseEntity<List<PostDTO>> showAll(@QueryParam("page") Integer page, @QueryParam("pageSize") Integer pageSize){
+        return new ResponseEntity<>(postService.showAll(page,pageSize), HttpStatus.ACCEPTED);
     }
 
 
-    @DeleteMapping("/posts/{postId}")
+    @DeleteMapping("/{postId}")
     public ResponseEntity<String> deleteById(@PathVariable("postId") String postId){
         return  new ResponseEntity<>(postService.deleteById(postId), HttpStatus.ACCEPTED);
     }
 
 
 
-    @PutMapping("/posts/{postId}")
-    public ResponseEntity<PostModel> updatePost(@RequestBody @Valid PostModel postModel, @PathVariable("postId") String postId){
+    @PutMapping("/{postId}")
+    public ResponseEntity<PostDTO> updatePost(@RequestBody @Valid PostModel postModel, @PathVariable("postId") String postId){
         return  new ResponseEntity<>(postService.updatePost(postModel,postId), HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/posts/{postId}")
-    public ResponseEntity<FeignRequest> findById(@PathVariable("postId") String postId){
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostDTO> findById(@PathVariable("postId") String postId){
         return new ResponseEntity<>(postService.findById(postId), HttpStatus.ACCEPTED);
     }
 
 
-    @PostMapping("/posts")
-    public ResponseEntity<PostModel> savePost(@RequestBody @Valid PostModel postModel){
+    @PostMapping()
+    public ResponseEntity<PostDTO> savePost(@RequestBody @Valid PostModel postModel){
         return  new ResponseEntity<>(postService.savePost(postModel), HttpStatus.ACCEPTED);
     }
 
