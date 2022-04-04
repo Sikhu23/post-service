@@ -6,7 +6,6 @@ import com.postservice.Exception.PostNotFoundException;
 import com.postservice.Feign.FeignComment;
 import com.postservice.Feign.FeignLike;
 import com.postservice.Feign.FeignUser;
-import com.postservice.Model.FeignRequest;
 import com.postservice.Model.PostDTO;
 import com.postservice.Model.PostModel;
 import com.postservice.Repository.PostRepo;
@@ -55,12 +54,12 @@ public class PostService {
         postModel.setUpdatedAt(LocalDateTime.now());
         this.postRepo.save(postModel);
 
-        PostDTO postDTO= new PostDTO(postModel.getPostID(),postModel.getPost(),
+        return new PostDTO(postModel.getPostID(),postModel.getPost(),
                 feignUser.findByID(postModel.getPostedBy())
                 ,postModel.getCreatedAt(),postModel.getUpdatedAt(),feignLike.likeCount(postModel.getPostID()),
                 feignComment.commentCount(postModel.getPostID()));
 
-        return postDTO;
+
     }
 
 
@@ -70,12 +69,12 @@ public class PostService {
 
             PostModel postModel=postRepo.findById(postId).get();
 
-            PostDTO postDTO= new PostDTO(postModel.getPostID(),postModel.getPost(),
+            return new PostDTO(postModel.getPostID(),postModel.getPost(),
                     feignUser.findByID(postModel.getPostedBy())
                     ,postModel.getCreatedAt(),postModel.getUpdatedAt(),feignLike.likeCount(postModel.getPostID()),
                     feignComment.commentCount(postModel.getPostID()));
 
-            return postDTO;
+
         }
         catch (Exception e){
                     throw new PostNotFoundException(ConstFile.errorCode);
@@ -90,11 +89,11 @@ public class PostService {
         postModel.setUpdatedAt(postModel.getCreatedAt());
         postRepo.save(postModel);
 
-        PostDTO postDTO= new PostDTO(postModel.getPostID(),postModel.getPost(),
+        return new PostDTO(postModel.getPostID(),postModel.getPost(),
                 feignUser.findByID(postModel.getPostedBy())
                 ,postModel.getCreatedAt(),postModel.getUpdatedAt(),0,0);
 
-        return postDTO;
+
 
 
 

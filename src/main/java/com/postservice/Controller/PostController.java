@@ -1,7 +1,7 @@
 package com.postservice.Controller;
 
 
-import com.postservice.Model.FeignRequest;
+
 import com.postservice.Model.PostDTO;
 import com.postservice.Model.PostModel;
 import com.postservice.Service.PostService;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+
 
 import org.springframework.web.bind.annotation.RequestBody;
 
