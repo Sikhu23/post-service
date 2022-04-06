@@ -2,13 +2,16 @@ package com.postservice.Service;
 
 
 import com.postservice.Const.ConstFile;
+import com.postservice.Exception.PostIdExistsException;
 import com.postservice.Exception.PostNotFoundException;
+import com.postservice.Exception.UserNotFoundException;
 import com.postservice.Feign.FeignComment;
 import com.postservice.Feign.FeignLike;
 import com.postservice.Feign.FeignUser;
 import com.postservice.Model.PostDTO;
 import com.postservice.Model.PostModel;
 import com.postservice.Repository.PostRepo;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -49,15 +52,47 @@ public class PostService {
 
 
     public PostDTO updatePost(PostModel postModel, String postId) {
-        postModel.setPostID(postId);
-        postModel.setCreatedAt(postRepo.findById(postId).get().getCreatedAt());
-        postModel.setUpdatedAt(LocalDateTime.now());
-        this.postRepo.save(postModel);
+        if(postModel.getPostID()==null || postModel.getPostID().equals(postId)){
+            postModel.setPostID(postId);
+            postModel.setCreatedAt(postRepo.findById(postId).get().getCreatedAt());
+            postModel.setUpdatedAt(LocalDateTime.now());
+            this.postRepo.save(postModel);
 
-        return new PostDTO(postModel.getPostID(),postModel.getPost(),
-                feignUser.findByID(postModel.getPostedBy())
-                ,postModel.getCreatedAt(),postModel.getUpdatedAt(),feignLike.likeCount(postModel.getPostID()),
-                feignComment.commentCount(postModel.getPostID()));
+            try{
+                return new PostDTO(postModel.getPostID(),postModel.getPost(),
+                        feignUser.findByID(postModel.getPostedBy())
+                        ,postModel.getCreatedAt(),postModel.getUpdatedAt(),feignLike.likeCount(postModel.getPostID()),
+                        feignComment.commentCount(postModel.getPostID()));
+            }
+            catch (FeignException e){
+                throw new UserNotFoundException("No User Found for this postedBy ID");
+            }
+        }
+        else{
+            if(postRepo.findById(postModel.getPostID()).isPresent() && postRepo.findById(postId).isPresent()){
+                throw new PostIdExistsException("This Post ID already Exists");
+            }
+            else if(postRepo.findById(postModel.getPostID()).isPresent() && !postRepo.findById(postId).isPresent()){
+                throw new PostNotFoundException(ConstFile.errorCode);
+            }
+            else{
+                postModel.setPostID(postModel.getPostID());
+                postModel.setCreatedAt(postRepo.findById(postId).get().getCreatedAt());
+                postModel.setUpdatedAt(LocalDateTime.now());
+                this.postRepo.save(postModel);
+                this.postRepo.deleteById(postId);
+
+                try{
+                    return new PostDTO(postModel.getPostID(),postModel.getPost(),
+                            feignUser.findByID(postModel.getPostedBy())
+                            ,postModel.getCreatedAt(),postModel.getUpdatedAt(),feignLike.likeCount(postModel.getPostID()),
+                            feignComment.commentCount(postModel.getPostID()));
+                }
+                catch (FeignException e){
+                    throw new UserNotFoundException("No User Found for this postedBy ID");
+                }
+            }
+        }
 
 
     }
@@ -71,8 +106,9 @@ public class PostService {
 
             return new PostDTO(postModel.getPostID(),postModel.getPost(),
                     feignUser.findByID(postModel.getPostedBy())
-                    ,postModel.getCreatedAt(),postModel.getUpdatedAt(),feignLike.likeCount(postModel.getPostID()),
-                    feignComment.commentCount(postModel.getPostID()));
+                    ,postModel.getCreatedAt(),postModel.getUpdatedAt(),feignComment.commentCount(postModel.getPostID()),
+                    feignLike.likeCount(postModel.getPostID())
+                    );
 
 
         }
@@ -115,8 +151,9 @@ public class PostService {
         for(PostModel postModel:postModels){
             PostDTO postDTO = new PostDTO(postModel.getPostID(),postModel.getPost(),
                     feignUser.findByID(postModel.getPostedBy()),postModel.getCreatedAt(),
-                    postModel.getUpdatedAt(),feignLike.likeCount(postModel.getPostID()),
-                    feignComment.commentCount(postModel.getPostID()));
+                    postModel.getUpdatedAt(),feignComment.commentCount(postModel.getPostID()),
+                    feignLike.likeCount(postModel.getPostID())
+                    );
             postDTOS.add(postDTO);
         }
         return  postDTOS;
