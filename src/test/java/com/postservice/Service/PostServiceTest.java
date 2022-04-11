@@ -1,6 +1,7 @@
 package com.postservice.Service;
 
 import com.postservice.Exception.PostNotFoundException;
+import com.postservice.Exception.UserNotFoundException;
 import com.postservice.Feign.FeignComment;
 import com.postservice.Feign.FeignLike;
 import com.postservice.Feign.FeignUser;
@@ -89,6 +90,7 @@ class PostServiceTest {
         when(this.postRepo.save(postModel)).thenReturn(postModel);
         when(this.postRepo.findById("1")).thenReturn(Optional.of(postModel));
         assertThat(this.service.updatePost(postModel,"1").getPost()).isEqualTo(postDTO.getPost());
+        assertThrows(PostNotFoundException.class,()->this.service.updatePost(postModel,"2"));
 
 
     }
