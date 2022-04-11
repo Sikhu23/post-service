@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 class PostServiceExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({PostNotFoundException.class,PostIdExistsException.class,UserNotFoundException.class})
-    ResponseEntity customerNotFoundHandler(Exception exception, ServletWebRequest request){
+    ResponseEntity<Object> customerNotFoundHandler(Exception exception, ServletWebRequest request){
         ApiError apiError = new ApiError();
         apiError.setMessage(exception.getMessage());
         apiError.setCode("404");
